@@ -1,0 +1,16 @@
+這個 script 主要是將網頁上 "内核补丁：字符终端下显示UTF-8字符" 的 kernel patch & build 自動化。
+讓有興趣測試及開發的人，也能方便的重複並驗證出這個 patch 功能運作。
+
+需求程式:
+
+	git sudo bzip2 wget qemu
+
+使用方式，請直接執行下列指令:
+
+	./linux-kernel-zh.sh
+
+依選項選取後，script 會自動抓取網路上的對應 patch ， 設定及編譯 busybox & linux kernl 並執行 qemu.
+
+參考連結:
+http://blogold.chinaunix.net/u/13265/showart.php?id=1008020
+http://code.google.com/p/ucimf/issues/detail?id=67
