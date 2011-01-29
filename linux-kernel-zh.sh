@@ -6,7 +6,7 @@
 
 ROOT="$( readlink -f $( dirname $(echo $0)) )" 
 
-KERNEL_VERSION_TAG="v2.6.36"
+KERNEL_VERSION_TAG="v2.6.37"
 KERNEL_SOURCE_GIT="git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6.git"
 KERNEL_SOURCE_GIT_DIR="$ROOT/linux-2.6"
 
@@ -18,14 +18,14 @@ RESULT_DIR="$ROOT/image"
 INITRAMFS_DIR="$ROOT/image/_install"
 
 ZH_PATCH_PREFIX="http://zdbr.net.cn/download/"
-ZH_PATCH10="utf8-kernel-2.6.36-core-1.patch.bz2"
-ZH_PATCH23="utf8-kernel-2.6-fonts-3.patch.bz2"
+ZH_PATCH1="utf8-kernel-2.6.37-core-1.patch.bz2"
+ZH_PATCH2="utf8-kernel-2.6-fonts-3.patch.bz2"
 
 get_patch() {
 	# TODO: would be better if we got md5sum as existance checing.
 
-	wget --continue $ZH_PATCH_PREFIX/$ZH_PATCH10
-	wget --continue $ZH_PATCH_PREFIX/$ZH_PATCH23
+	wget --continue $ZH_PATCH_PREFIX/$ZH_PATCH1
+	wget --continue $ZH_PATCH_PREFIX/$ZH_PATCH2
 
 	for file in `ls *.bz2`
 	do 
@@ -123,14 +123,14 @@ build_kernel () {
 	test -d $RESULT_DIR || mkdir -p $RESULT_DIR
 	
 	pushd . ; cd $KERNEL_SOURCE_GIT_DIR
-		#git fetch
-		git reset && git checkout $KERNEL_VERSION_TAG 
+		git fetch
+		git reset; git checkout $KERNEL_VERSION_TAG 
 		git checkout -- .
 
 		clean_file drivers/video/console/fonts_utf8.h # reset file
 
-		patch -N -d . -p1 < $ROOT/${ZH_PATCH10%.bz2}
-		patch -N -d . -p1 < $ROOT/${ZH_PATCH23%.bz2}
+		patch -N -d . -p1 < $ROOT/${ZH_PATCH1%.bz2}
+		patch -N -d . -p1 < $ROOT/${ZH_PATCH2%.bz2}
 
 		make ARCH=x86 i386_defconfig
 		patch_kernel_config ./.config
@@ -142,7 +142,7 @@ build_kernel () {
 
 launch_image(){
 	pushd . ; cd $RESULT_DIR
-	qemu -kernel bzImage -append "vga=0x314" 
+	qemu -kernel bzImage -append "vga=0x314 root=/dev/ram0" 
 	popd
 }
 
